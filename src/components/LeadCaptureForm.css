@@ -1,20 +1,20 @@
 .lead-capture-form {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(10px);
+    background: white;
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
-    padding: var(--spacing-lg);
+    padding: 2.5rem;
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    max-width: 450px;
     width: 100%;
 }
 
 .lead-capture-form h3 {
     margin-bottom: var(--spacing-sm);
     font-size: 1.5rem;
+    color: var(--text-primary);
 }
 
 .form-group {
@@ -25,15 +25,15 @@
 
 .form-group label {
     font-size: 0.875rem;
-    color: var(--text-secondary);
-    font-weight: 500;
+    color: var(--text-primary);
+    font-weight: 600;
 }
 
 .form-group input {
     padding: 0.75rem var(--spacing-md);
-    background: rgba(0, 0, 0, 0.2);
+    background: white;
     border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
+    border-radius: var(--radius);
     color: var(--text-primary);
     font-size: 1rem;
     font-family: inherit;
@@ -43,33 +43,38 @@
 .form-group input:focus {
     outline: none;
     border-color: var(--accent-primary);
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .cta-button {
     margin-top: var(--spacing-sm);
-    padding: 0.875rem;
-    background: var(--accent-gradient);
+    padding: 1rem;
+    background: var(--accent-primary);
     border: none;
-    border-radius: 0.5rem;
+    border-radius: var(--radius);
     color: white;
     font-weight: 600;
     font-size: 1rem;
-    transition: opacity 0.2s, transform 0.1s;
+    transition: background-color 0.2s;
 }
 
 .cta-button:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-}
-
-.cta-button:active {
-    transform: translateY(0);
+    background: var(--accent-secondary);
+    opacity: 1;
+    /* Remove transparency */
+    transform: none;
+    /* No bounce, strictly professional */
 }
 
 .success-message {
-    color: #4ade80;
+    padding: 1rem;
+    background-color: #ecfdf5;
+    /* Success Green Light */
+    border: 1px solid #a7f3d0;
+    border-radius: var(--radius);
+    color: var(--success);
     text-align: center;
     margin-top: var(--spacing-sm);
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 0.9rem;
 }

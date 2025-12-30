@@ -1,16 +1,56 @@
-# React + Vite
+# Leadsplatter | Enterprise-Grade AI Lead Gen
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The complete infrastructure for B2B lead generation, enrichment, and CRM synchronization.
 
-Currently, two official plugins are available:
+## 🚀 Features
+- **AI-Powered Lead Scoring**: Uses Llama 3 (via Hugging Face) to qualify prospects.
+- **CRM Sync**: Native integrations with HubSpot.
+- **Real-Time Analytics**: Dashboard with SQLite persistence.
+- **Monetization Ready**: Tiered pricing structure prepared for Stripe integration.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠 Tech Stack
+- **Frontend**: React, Vite, Recharts, Lucide Icons
+- **Backend**: Node.js, Express
+- **Database**: SQLite (Production-ready via volume mounting)
+- **Email**: Nodemailer (SMTP)
 
-## React Compiler
+## 📦 Deployment Instructions
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Option 1: Docker (Recommended)
+This repo includes a production-ready `Dockerfile`.
 
-## Expanding the ESLint configuration
+1. **Build the Image**
+   ```bash
+   docker build -t leadsplatter .
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+2. **Run the Container**
+   ```bash
+   docker run -p 3000:3000 \
+     -e VITE_HUBSPOT_ACCESS_TOKEN=your_token \
+     -e VITE_HUGGING_FACE_TOKEN=your_token \
+     leadsplatter
+   ```
+
+### Option 2: VPS / Railway / Render
+1. Push this repo to GitHub.
+2. Connect your account (e.g., in Render, select "New Web Service").
+3. Set the Build Command: `npm install && npm run build`
+4. Set the Start Command: `node server.js`
+5. Add your Environment Variables in the dashboard.
+
+## 🔑 Environment Variables
+Create a `.env` file in the root:
+```env
+VITE_HUBSPOT_ACCESS_TOKEN=pat-eu1-...
+VITE_HUGGING_FACE_TOKEN=hf_...
+SMTP_HOST=smtp.gmail.com
+SMTP_USER=your@email.com
+SMTP_PASS=your_app_password
+```
+
+## 💰 Monetization
+To enable real payments:
+1. Sign up for [Stripe](https://stripe.com).
+2. Get your Publishable/Secret keys.
+3. Update `server.js` `create-checkout-session` endpoint with the official Stripe Node.js library.
