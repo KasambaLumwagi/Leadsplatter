@@ -3,33 +3,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700&display=swap');
 
 :root {
-  /* Colors - Enterprise Theme */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  /* Slate-50 */
-  --text-primary: #0f172a;
-  /* Slate-900 */
-  --text-secondary: #475569;
-  /* Slate-600 */
-  --accent-primary: #2563eb;
-  /* Blue-600 */
-  --accent-secondary: #1d4ed8;
-  /* Blue-700 */
-  --accent-gradient: linear-gradient(135deg, #2563eb, #1e40af);
-  --border-color: #e2e8f0;
-  /* Slate-200 */
+  /* Ultra-Premium Dark Theme */
+  --bg-primary: #050505;
+  /* Almost Black - Deep Void */
+  --bg-surface: #0a0a0a;
+  /* Slightly lighter black for cards */
+  --bg-glass: rgba(255, 255, 255, 0.03);
+
+  --brand-black: #000000;
+  --brand-gold: #D4AF37;
+  /* Classic Metallic Gold */
+  --brand-gold-glow: rgba(212, 175, 55, 0.3);
+  --brand-blue: #3b82f6;
+  /* Electric Blue for Tech accents */
+
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  /* Slate-400 */
+  --text-muted: #64748b;
+  /* Slate-500 */
+
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-gold: rgba(212, 175, 55, 0.4);
+
   --success: #10b981;
-  --error: #ef4444;
 
   /* Spacing */
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
   --spacing-lg: 2rem;
-  --spacing-xl: 4rem;
+  --spacing-xl: 5rem;
 
   /* Radius */
-  --radius: 0.5rem;
-  /* Sharper corners for serious feel */
+  --radius: 12px;
 }
 
 *,
@@ -55,17 +61,22 @@ h5,
 h6 {
   font-family: 'Outfit', sans-serif;
   margin: 0 0 var(--spacing-md);
-  line-height: 1.2;
+  line-height: 1.1;
   color: var(--text-primary);
 }
 
 h1 {
-  font-size: 3.5rem;
+  font-size: 4rem;
   letter-spacing: -0.02em;
+  background: linear-gradient(to bottom right, #ffffff, #94a3b8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Text Gradient for depth */
 }
 
 h2 {
-  font-size: 2.5rem;
+  font-size: 3rem;
   letter-spacing: -0.01em;
 }
 
@@ -76,15 +87,15 @@ p {
 }
 
 a {
-  color: var(--accent-primary);
+  color: var(--brand-gold);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.2s;
+  transition: all 0.2s;
 }
 
 a:hover {
-  color: var(--accent-secondary);
-  text-decoration: underline;
+  color: white;
+  text-shadow: 0 0 10px var(--brand-gold-glow);
 }
 
 button {
@@ -92,11 +103,11 @@ button {
   font-family: 'Inter', sans-serif;
 }
 
-/* Animations - Subtle & Professional */
+/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
 
   to {
@@ -106,13 +117,5 @@ button {
 }
 
 .fade-in {
-  animation: fadeIn 0.6s ease-out forwards;
-}
-
-.gradient-text {
-  color: var(--accent-primary);
-  /* Solid color is more serious than gradient text usually */
-  background: none;
-  -webkit-background-clip: unset;
-  background-clip: unset;
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
