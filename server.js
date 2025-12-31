@@ -6,18 +6,33 @@ import nodemailer from 'nodemailer';
 import { initDb, addLead, getAnalytics } from './database.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import basicAuth from 'express-basic-auth';
+import Stripe from 'stripe';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+// Initialize Stripe if key is present, otherwise null.
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 // Initialize DB
 initDb();
 
-// Middleware
+// --- MIDDLEWARE ---
+app.use(helmet()); // Security Headers
 app.use(cors());
 app.use(express.json());
+
+// Rate Limiter: 100 requests per 15 mins
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: { error: 'Too many requests, please try again later.' }
+});
+app.use(limiter);
 
 // Serve Static Files (Vite Build)
 const __filename = fileURLToPath(import.meta.url);
@@ -26,7 +41,6 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 // --- SERVICES ---
 
-// Real Email Service (Nodemailer) - Configured for Production
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: process.env.SMTP_PORT || 587,
@@ -40,13 +54,11 @@ const transporter = nodemailer.createTransport({
 const sendDripCampaign = async (email, name) => {
     console.log(`[DRIP-SYSTEM] Scheduling email for ${email}...`);
     if (!process.env.SMTP_USER) return;
-
     try {
         await transporter.sendMail({
             from: `"Leadsplatter Team" <${process.env.SMTP_USER}>`,
             to: email,
             subject: "Welcome to Leadsplatter! 🚀",
-            text: `Hi ${name || 'there'},\n\nThanks for joining. Here is your free guide to AI Lead Gen.\n\nBest,\nLeadsplatter Team`,
             html: `<b>Hi ${name || 'there'},</b><br><br>Thanks for joining. Here is your free guide to <i>AI Lead Gen</i>.<br><br>Best,<br>Leadsplatter Team`
         });
     } catch (error) {
@@ -84,8 +96,14 @@ app.post('/api/crm/lead', async (req, res) => {
     }
 });
 
-// 2. Analytics
-app.get('/api/analytics', async (req, res) => {
+// 2. Analytics (SECURED)
+// Uses Basic Auth: admin / password (from .env or default)
+const authMiddleware = basicAuth({
+    users: { [process.env.DASHBOARD_USER || 'admin']: process.env.DASHBOARD_PASS || 'admin' },
+    challenge: true // Browse will prompt for login
+});
+
+app.get('/api/analytics', authMiddleware, async (req, res) => {
     try {
         const stats = await getAnalytics();
         res.json(stats);
@@ -106,21 +124,47 @@ app.post('/api/ai/chat', async (req, res) => {
         });
         res.json({ response: response.data[0]?.generated_text || "I couldn't generate a response." });
     } catch (error) {
-        if (error.response?.data?.error?.includes('loading')) {
-            return res.status(503).json({ error: 'Model is loading, please try again.' });
-        }
         res.status(500).json({ error: 'Failed to generate AI response' });
     }
 });
 
-// Mock Stripe Checkout Endpoint
+// 4. Stripe Checkout (REAL)
 app.post('/api/create-checkout-session', async (req, res) => {
-    // In real life, use: const session = await stripe.checkout.sessions.create(...)
-    res.json({ url: 'https://checkout.stripe.com/test-link' });
+    const { plan } = req.body;
+    let priceId;
+
+    // Define price IDs (In production, use Stripe Dashboard IDs like 'price_123...')
+    // For this demo, we create one-time mock prices or use test IDs if provided.
+    if (plan === 'Starter') priceId = 'price_1Q...'; // Replace with real ID
+    if (plan === 'Pro') priceId = 'price_1Q...';
+
+    // If no key is set or stripe didn't initialize, fallback to mock
+    if (!process.env.STRIPE_SECRET_KEY || !stripe) {
+        return res.json({ url: 'https://checkout.stripe.com/test-link-mock' });
+    }
+
+    try {
+        const session = await stripe.checkout.sessions.create({
+            line_items: [
+                {
+                    // Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
+                    price: priceId || 'price_12345',
+                    quantity: 1,
+                },
+            ],
+            mode: 'subscription',
+            success_url: `http://localhost:3000/?success=true`,
+            cancel_url: `http://localhost:3000/?canceled=true`,
+        });
+        res.json({ url: session.url });
+    } catch (err) {
+        console.error('Stripe Error:', err.message);
+        res.status(500).json({ error: err.message });
+    }
 });
 
-// Handle SPA Routing (Always return index.html for unknown routes)
-app.get('*', (req, res) => {
+// Handle SPA Routing
+app.get(/(.*)/, (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 

@@ -16,6 +16,9 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "express-basic-auth": "^1.2.1",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
     "lucide-react": "^0.562.0",
     "nodemailer": "^7.0.12",
     "open": "^11.0.0",
@@ -25,6 +28,7 @@
     "recharts": "^3.6.0",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
+    "stripe": "^20.1.0",
     "three": "^0.182.0"
   },
   "devDependencies": {

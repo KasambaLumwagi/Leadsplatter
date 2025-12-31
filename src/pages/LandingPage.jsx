@@ -4,9 +4,24 @@ import LeadCaptureForm from '../components/LeadCaptureForm';
 import Hero3DScene from '../components/Hero3DScene';
 
 const LandingPage = () => {
-    const handlePurchase = (plan) => {
-        console.log(`Purchasing ${plan}...`);
-        alert(`Redirecting to Stripe Checkout for ${plan}...`);
+    const handlePurchase = async (plan) => {
+        try {
+            console.log(`Initiating checkout for ${plan}...`);
+            const response = await fetch('/api/create-checkout-session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ plan })
+            });
+            const data = await response.json();
+            if (data.url) {
+                window.location.href = data.url;
+            } else {
+                alert('Checkout failed: ' + (data.error || 'Unknown Error'));
+            }
+        } catch (error) {
+            console.error('Purchase Error:', error);
+            alert('Failed to connect to payment server.');
+        }
     };
 
     return (

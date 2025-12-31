@@ -9,16 +9,10 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         // Proxy for HubSpot API to avoid CORS and hide logic slightly during dev
-        '/api/hubspot': {
-          target: 'https://api.hubapi.com',
+        '/api': {
+          target: 'http://localhost:3000',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api\/hubspot/, ''),
-        },
-        // Proxy for Hugging Face Inference API
-        '/api/ai': {
-          target: 'https://api-inference.huggingface.co',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api\/ai/, ''),
+          secure: false,
         }
       }
     }

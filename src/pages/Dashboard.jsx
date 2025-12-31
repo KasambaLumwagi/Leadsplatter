@@ -61,16 +61,24 @@ const StatCard = ({ title, value, subtext, icon: Icon, trend }) => (
 const Dashboard = () => {
     const [stats, setStats] = useState({ totalLeads: 0, recentLeads: [] });
     const [loading, setLoading] = useState(true);
+    const [unauthorized, setUnauthorized] = useState(false);
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const res = await fetch('http://localhost:3000/api/analytics');
+                const res = await fetch('/api/analytics');
+                if (res.status === 401) {
+                    setUnauthorized(true);
+                    setLoading(false);
+                    return;
+                }
                 const data = await res.json();
                 setStats(data);
 
                 // Update graph with real today count
-                trendData[trendData.length - 1].leads = data.totalLeads;
+                if (trendData[trendData.length - 1]) {
+                    trendData[trendData.length - 1].leads = data.totalLeads;
+                }
             } catch (err) {
                 console.error("Failed to load analytics", err);
             } finally {
@@ -81,7 +89,22 @@ const Dashboard = () => {
         fetchStats();
     }, []);
 
-    if (loading) return <div style={{ padding: '4rem' }}>Loading real-time data...</div>;
+    if (unauthorized) {
+        return (
+            <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                <h2>Access Restricted</h2>
+                <p style={{ margin: '1rem 0', color: '#9ca3af' }}>You must log in to view sensitive lead data.</p>
+                <button
+                    onClick={() => window.location.reload()}
+                    style={{ padding: '0.75rem 1.5rem', background: 'var(--brand-gold)', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                    Log In
+                </button>
+            </div>
+        );
+    }
+
+    if (loading) return <div style={{ padding: '4rem', color: 'white' }}>Loading real-time data...</div>;
 
     return (
         <div className="fade-in dashboard-container" style={{ padding: 'var(--spacing-xl)', maxWidth: '1400px', margin: '0 auto' }}>
